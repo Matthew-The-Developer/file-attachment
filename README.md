@@ -29,7 +29,7 @@ Run `ng build --base-href "https://Matthew-The-Developer.github.io/file-attachme
 
 ## Deploy
 
-Run `npx angular-cli-ghpages --dir=dist/file-uploader` to deploy the current build of the project to [GitHub Pages](https://matthew-the-developer.github.io/file-attachment/).
+Run `npx angular-cli-ghpages --dir=dist/file-attachment` to deploy the current build of the project to [GitHub Pages](https://matthew-the-developer.github.io/file-attachment/).
 
 ## Running unit tests
 
