@@ -22,6 +22,10 @@ export class DocumentAttachmentComponent implements OnInit {
     return Object.values(MedicalType);
   }
 
+  get acceptableTypes(): string {
+    return [ ...DocumentExtensions.keys(), ...ImageExtensions.keys(), ...PDFExtensions.keys() ].join(',');
+  }
+
   isImage(document: MedicalDocument): boolean {
     return ImageExtensions.has(document.extension);
   }

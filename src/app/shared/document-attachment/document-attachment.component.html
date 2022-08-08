@@ -18,6 +18,7 @@
 <input 
   #fileInput
   (change)="onSelected($event)"
+  [accept]="acceptableTypes"
   type="file"
   class="file-upload"
   multiple

@@ -8,6 +8,7 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 - [x] Migrate and optomize solution created in the file-uploader project
 - [x] Create document attachment as a standalone component
 - [x] Improve the image and pdf preview dialogs
+- [x] Added file type selector filtering
 - [ ] Setup Firebase project
 - [ ] Install firebase sdk
 - [ ] Setup authorization and guards
