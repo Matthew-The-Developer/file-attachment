@@ -1,0 +1,102 @@
+<div class="row">
+  <span class="mat-body-strong caption">
+    Files {{ documents.length }} <span *ngIf="files.length > 0">(+{{ files.length }})</span>
+  </span>
+
+  <span spacer></span>
+
+  <button 
+    (click)="fileInput.click()"
+    color="accent"
+    mat-button
+  >
+    Select Files
+  </button>
+</div>
+
+<mat-divider></mat-divider>
+<input 
+  #fileInput
+  (change)="onSelected($event)"
+  type="file"
+  class="file-upload"
+  multiple
+  hidden
+>
+
+<mat-list>
+  <mat-list-item *ngFor="let file of files" class="file">
+    <span 
+      (click)="openPreview(file)"
+      [class.underline]="isPreviewable(file)"
+      [matTooltipDisabled]="!isDocument(file)"
+      matTooltip="Attach this document or open it locally to preview"
+    >
+      {{ file.name }}
+    </span>
+    
+    <span class="mat-caption size">{{ file.size | fileSize }}</span>
+
+    <span spacer></span>
+
+    <button mat-button [matMenuTriggerFor]="menu" class="suffixIcon">
+      {{ file.medicalType }}
+      <mat-icon>arrow_drop_down</mat-icon>
+    </button>
+
+    <mat-menu #menu="matMenu">
+      <button 
+        *ngFor="let type of medicalTypes"
+        (click)="changeMedicalType(file, type)"
+        mat-menu-item
+      >
+        {{ type }}
+      </button>
+    </mat-menu>
+
+    <button (click)="removeFile(file)" color="warn" mat-icon-button>
+      <mat-icon>close</mat-icon>
+    </button>
+
+    <button color="accent" mat-flat-button>Attach</button>
+  </mat-list-item>
+
+  <mat-list-item *ngFor="let document of documents" class="file">
+    <span 
+      (click)="openPreview(document)"
+      [class.underline]="isPreviewable(document)"
+      [matTooltipDisabled]="!isDocument(document)"
+      matTooltip="Attach this document or open it locally to preview"
+    >
+      {{ document.name }}
+    </span>
+    
+    <span class="mat-caption size">{{ document.size | fileSize }}</span>
+
+    <span spacer></span>
+
+    <button mat-button [matMenuTriggerFor]="menu" class="suffixIcon">
+      {{ document.medicalType }}<mat-icon>arrow_drop_down</mat-icon>
+    </button>
+
+    <mat-menu #menu="matMenu">
+      <button 
+        *ngFor="let type of medicalTypes"
+        (click)="changeMedicalType(document, type)"
+        mat-menu-item
+      >
+        {{ type }}
+      </button>
+    </mat-menu>
+
+    <button color="warn" mat-flat-button>Delete</button>
+  </mat-list-item>
+
+  <ng-container *ngIf="files.length == 0 && documents.length == 0">
+    <mat-list-item class="no-files">
+      <span class="mat-body">No Files Attached</span>
+    </mat-list-item>
+  </ng-container>
+</mat-list>
+
+<mat-divider></mat-divider>
