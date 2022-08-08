@@ -51,7 +51,7 @@ export class DocumentAttachmentComponent implements OnInit {
         return document;
       });
 
-      console.log(this.files, this.documents);
+      event.target.value = null;
     }
   }
 
