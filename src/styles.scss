@@ -104,28 +104,6 @@ $file-attachment-theme: mat.define-light-theme((
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
-.mat-button .mat-icon {
-  font-size: 150%;
-}
-
-.mat-button.suffixIcon {
-  padding-right: 0.5rem;
-}
-
-.image-preview-dialog .mat-dialog-container {
-  overflow: hidden;
-  padding: 0;
-}
-
-.image-preview-dialog .mat-dialog-container .mat-dialog-content {
-  margin: 0;
-}
-
-.pdf-preview-dialog .mat-dialog-container {
-  overflow: hidden;
-  padding: 0;
-}
-
-.pdf-preview-dialog .mat-dialog-container .mat-dialog-content {
-  margin: 0;
-}
+@import "button.scss";
+@import "dialog.scss";
+@import "form.scss";
