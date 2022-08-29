@@ -1,0 +1,14 @@
+<ng-container *ngIf="(authService.user$ | async) as user">
+  <mat-list>
+    <mat-list-item>
+      <h3 matLine>{{ user.displayName }}</h3>
+      <p matLine>{{ user.email }}</p>
+    </mat-list-item>
+  </mat-list>
+
+  <mat-divider></mat-divider>
+
+  <mat-action-list>
+    <button mat-list-item (click)="signout()">Sign Out</button>
+  </mat-action-list>
+</ng-container>

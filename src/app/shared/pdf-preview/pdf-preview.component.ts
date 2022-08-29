@@ -1,6 +1,7 @@
+import { HttpClient } from '@angular/common/http';
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { MedicalDocument } from 'src/app/models/document.model';
+import { VirtualDocument } from 'src/app/models/document.model';
 
 @Component({
   selector: 'app-pdf-preview',
@@ -8,16 +9,21 @@ import { MedicalDocument } from 'src/app/models/document.model';
   styleUrls: ['./pdf-preview.component.scss']
 })
 export class PdfPreviewComponent implements OnInit {
-  document!: MedicalDocument;
   url!: string;
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: MedicalDocument) { }
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public data: File | VirtualDocument,
+    private http: HttpClient
+  ) { }
 
   ngOnInit(): void {
-    this.document = this.data;
-
-    const reader = new FileReader();
-    reader.onload = () => this.url = reader.result as string;
-    reader.readAsDataURL(this.document);
+    if (this.data instanceof File) {
+      const reader = new FileReader();
+      reader.onload = () => this.url = reader.result as string;
+      reader.readAsDataURL(this.data);
+    } else {
+      this.url = this.data.url;
+      this.http.get(this.url, { responseType: 'arraybuffer' }).subscribe(result => console.log(result));
+    }
   }
 }

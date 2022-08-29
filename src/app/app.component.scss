@@ -1,16 +1,5 @@
-:host {
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  
-  .login {
-    position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-  }
-
-  mat-card {
-    width: 90%;
-  }
+.login {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
 }

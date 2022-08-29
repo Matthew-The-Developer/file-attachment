@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { AuthService } from './services/auth.service';
 import { LoginComponent } from './shared/login/login.component';
 
 @Component({
@@ -8,7 +9,10 @@ import { LoginComponent } from './shared/login/login.component';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  constructor(private dialog: MatDialog) { }
+  constructor(
+    public authService: AuthService,
+    private dialog: MatDialog
+  ) { }
 
   openLogin(): void {
     this.dialog.open(LoginComponent, {

@@ -1,6 +1,6 @@
 interface User {
   uid: string;
-  email: string;
+  email?: string;
   photoURL?: string;
   displayName?: string;
 }

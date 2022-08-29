@@ -1,29 +1,32 @@
 <div class="row">
   <span class="mat-body-strong caption">
-    Files {{ documents.length }} <span *ngIf="files.length > 0">(+{{ files.length }})</span>
+    Documents {{ virtualDocuments.length }} <span *ngIf="files.length > 0">(+{{ files.length }})</span>
   </span>
 
   <span spacer></span>
 
-  <button 
-    (click)="fileInput.click()"
-    color="accent"
-    mat-button
-  >
-    Select Files
-  </button>
+  <ng-container *ngIf="!readonly">
+    <button 
+      (click)="fileInput.click()"
+      color="accent"
+      mat-button
+    >
+      Select Documents
+    </button>
+  
+    <input
+      #fileInput
+      (change)="onSelected($event)"
+      [accept]="acceptableTypes"
+      type="file"
+      class="file-upload"
+      multiple
+      hidden
+    >
+  </ng-container>
 </div>
 
 <mat-divider></mat-divider>
-<input 
-  #fileInput
-  (change)="onSelected($event)"
-  [accept]="acceptableTypes"
-  type="file"
-  class="file-upload"
-  multiple
-  hidden
->
 
 <mat-list>
   <mat-list-item *ngFor="let file of files" class="file">
@@ -32,6 +35,7 @@
       [class.underline]="isPreviewable(file)"
       [matTooltipDisabled]="!isDocument(file)"
       matTooltip="Attach this document or open it locally to preview"
+      class="name"
     >
       {{ file.name }}
     </span>
@@ -59,10 +63,10 @@
       <mat-icon>close</mat-icon>
     </button>
 
-    <button color="accent" mat-flat-button>Attach</button>
+    <button *ngIf="singleLineAttach" color="accent" mat-flat-button>Attach</button>
   </mat-list-item>
 
-  <mat-list-item *ngFor="let document of documents" class="file">
+  <mat-list-item *ngFor="let document of virtualDocuments" class="file">
     <span 
       (click)="openPreview(document)"
       [class.underline]="isPreviewable(document)"
@@ -90,12 +94,16 @@
       </button>
     </mat-menu>
 
+    <button mat-icon-button>
+      <mat-icon>file_download</mat-icon>
+    </button>
+
     <button color="warn" mat-flat-button>Delete</button>
   </mat-list-item>
 
-  <ng-container *ngIf="files.length == 0 && documents.length == 0">
+  <ng-container *ngIf="files.length == 0 && virtualDocuments.length == 0">
     <mat-list-item class="no-files">
-      <span class="mat-body">No Files Attached</span>
+      <span class="mat-body">No Documents Attached</span>
     </mat-list-item>
   </ng-container>
 </mat-list>

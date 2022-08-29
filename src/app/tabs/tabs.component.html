@@ -1,0 +1,9 @@
+<mat-card>
+  <mat-tab-group selectedIndex="2">
+    <mat-tab label="Details" disabled></mat-tab>
+    <mat-tab label="History" disabled></mat-tab>
+    <mat-tab label="Douments">
+      <app-document-attachment [readonly]="true" [virtualDocuments]="documents"></app-document-attachment>
+    </mat-tab>
+  </mat-tab-group>
+</mat-card>

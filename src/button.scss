@@ -1,3 +1,5 @@
+@import "variables.scss";
+
 .mat-button .mat-icon {
   font-size: 150%;
 }
@@ -5,3 +7,23 @@
 .mat-button.suffixIcon {
   padding-right: 0.5rem;
 }
+
+ @keyframes spinner {
+  to { transform: rotate(360); }
+ }
+
+ .spinner:before {
+  content: '';
+  box-sizing: border-box;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin-top: -10px;
+  margin-left: -10px;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+  border-top-color: $primary;
+  animation: spinner .8s linear infinite;
+ }

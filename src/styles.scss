@@ -107,3 +107,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 @import "button.scss";
 @import "dialog.scss";
 @import "form.scss";
+
+.mat-tab-body {
+  padding: 1rem;
+}

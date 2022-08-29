@@ -1,0 +1,22 @@
+mat-card {
+  padding: 0 0 1rem;
+
+  mat-toolbar {
+    height: 36px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    span {
+      margin: 0;
+    }
+  }
+
+  mat-card-content {
+    margin: 0;
+  }
+
+  mat-card-actions {
+    padding: 1rem;
+  }
+}

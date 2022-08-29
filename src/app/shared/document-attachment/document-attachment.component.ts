@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { DocumentExtensions, ImageExtensions, MedicalDocument, MedicalType, PDFExtensions } from 'src/app/models/document.model';
+import { DocumentExtensions, ImageExtensions, MedicalDocument, MedicalType, PDFExtensions, VirtualDocument } from 'src/app/models/document.model';
 import { ImagePreviewComponent } from '../image-preview/image-preview.component';
 import { PdfPreviewComponent } from '../pdf-preview/pdf-preview.component';
 
@@ -10,8 +10,9 @@ import { PdfPreviewComponent } from '../pdf-preview/pdf-preview.component';
   styleUrls: ['./document-attachment.component.scss']
 })
 export class DocumentAttachmentComponent implements OnInit {
-  @Input() actions: boolean = true;
-  @Input() documents: MedicalDocument[] = [];
+  @Input() singleLineAttach: boolean = false;
+  @Input() readonly: boolean = false;
+  @Input() virtualDocuments: VirtualDocument[] = [];
   files: MedicalDocument[] = [];
 
   constructor(public dialog: MatDialog) { }
@@ -26,19 +27,19 @@ export class DocumentAttachmentComponent implements OnInit {
     return [ ...DocumentExtensions.keys(), ...ImageExtensions.keys(), ...PDFExtensions.keys() ].join(',');
   }
 
-  isImage(document: MedicalDocument): boolean {
+  isImage(document: MedicalDocument | VirtualDocument): boolean {
     return ImageExtensions.has(document.extension);
   }
 
-  isPDF(document: MedicalDocument): boolean {
+  isPDF(document: MedicalDocument | VirtualDocument): boolean {
     return PDFExtensions.has(document.extension);
   }
 
-  isDocument(document: MedicalDocument): boolean {
+  isDocument(document: MedicalDocument | VirtualDocument): boolean {
     return DocumentExtensions.has(document.extension);
   }
 
-  isPreviewable(document: MedicalDocument): boolean {
+  isPreviewable(document: MedicalDocument | VirtualDocument): boolean {
     return ImageExtensions.has(document.extension) || PDFExtensions.has(document.extension);
   }
 
@@ -51,6 +52,8 @@ export class DocumentAttachmentComponent implements OnInit {
         const document = file as MedicalDocument;
         document.extension = extension;
         document.medicalType = MedicalType.ApprovalFromMother;
+
+        console.log(document);
 
         return document;
       });
@@ -67,11 +70,11 @@ export class DocumentAttachmentComponent implements OnInit {
     }
   }
 
-  changeMedicalType(document: MedicalDocument, type: string): void {
+  changeMedicalType(document: MedicalDocument | VirtualDocument, type: string): void {
     document.medicalType = type as MedicalType;
   }
 
-  openPreview(document: MedicalDocument): void {
+  openPreview(document: MedicalDocument | VirtualDocument): void {
     if (ImageExtensions.has(document.extension)) {
       this.dialog.open(ImagePreviewComponent, {
         data: document,
@@ -89,7 +92,7 @@ export class DocumentAttachmentComponent implements OnInit {
     }
   }
 
-  openImagePreview(document: MedicalDocument): void {
+  openImagePreview(document: MedicalDocument | VirtualDocument): void {
     this.dialog.open(ImagePreviewComponent, {
       data: document,
       hasBackdrop: true,
@@ -98,7 +101,7 @@ export class DocumentAttachmentComponent implements OnInit {
     })
   }
 
-  openPDFPreview(document: MedicalDocument): void {
+  openPDFPreview(document: MedicalDocument | VirtualDocument): void {
     this.dialog.open(PdfPreviewComponent, {
       data: document,
       hasBackdrop: true,

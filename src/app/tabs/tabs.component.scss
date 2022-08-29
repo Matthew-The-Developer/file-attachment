@@ -1,0 +1,15 @@
+:host {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+mat-card {
+  width: 55%;
+  padding: 0;
+  
+  .mat-tab-body {
+    padding: 1rem;
+  }
+}

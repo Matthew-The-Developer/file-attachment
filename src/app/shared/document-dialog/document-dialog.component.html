@@ -1,0 +1,14 @@
+<mat-card cdkDrag cdkDragRootElement=".cdk-overlay-pane" cdkDragBoundary=".cdk-overlay-container">
+  <mat-toolbar cdkDragHandle color="primary">
+    <span class="mat-subheading-2">Attach Documents</span>
+  </mat-toolbar>
+
+  <mat-card-content>
+    <app-document-attachment [singleLineAttach]="true"></app-document-attachment>
+  </mat-card-content>
+
+  <mat-card-actions align="end">
+    <button mat-stroked-button mat-dialog-close>Cancel</button>
+    <button mat-flat-button color="primary">Attach All</button>
+  </mat-card-actions>
+</mat-card>

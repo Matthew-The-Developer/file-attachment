@@ -1,0 +1,21 @@
+:host {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+mat-card {
+  width: 50%;
+  padding-bottom: 1.5rem;
+
+  mat-card-content {
+    .example-full-width {
+      width: 100%;
+    }
+  }
+
+  mat-card-actions {
+    padding: 0 0.5rem;
+  }
+}

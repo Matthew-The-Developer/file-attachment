@@ -1,7 +1,17 @@
-type MedicalDocument = File & {
+interface VirtualDocument {
+  url: string;
+  name: string;
+  size: number;
   extension: string;
+  type: string;
+  lastModified: Date;
   medicalType: MedicalType;
 }
+
+type MedicalDocument = File & {
+  medicalType: MedicalType;
+  extension: string;
+};
 
 enum MedicalType {
   BlackMarketTransplant = 'Black Market Transplant',
@@ -34,4 +44,4 @@ const DocumentExtensions = new Map<string, ExtensionType>([
   ['.docx', { mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', fullDescription: 'Microsoft Word 2007/2010 Open XML document file', application: 'ms-word:ofv|u|' }],
 ]);
 
-export { MedicalDocument, MedicalType, ExtensionType, ImageExtensions, PDFExtensions, DocumentExtensions };
+export { VirtualDocument, MedicalDocument, MedicalType, ExtensionType, ImageExtensions, PDFExtensions, DocumentExtensions };
