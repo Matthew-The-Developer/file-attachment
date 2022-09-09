@@ -94,11 +94,19 @@
       </button>
     </mat-menu>
 
-    <button mat-icon-button>
-      <mat-icon>file_download</mat-icon>
+    <button mat-icon-button [matMenuTriggerFor]="actionMenu" aria-label="Example icon-button with a menu">
+      <mat-icon>more_horiz</mat-icon>
     </button>
-
-    <button color="warn" mat-flat-button>Delete</button>
+    <mat-menu #actionMenu="matMenu">
+      <button mat-menu-item>
+        <mat-icon>file_download</mat-icon>
+        <span>Download</span>
+      </button>
+      <button mat-menu-item color="warn">
+        <mat-icon>delete</mat-icon>
+        <span>Delete</span>
+      </button>
+    </mat-menu>
   </mat-list-item>
 
   <ng-container *ngIf="files.length == 0 && virtualDocuments.length == 0">

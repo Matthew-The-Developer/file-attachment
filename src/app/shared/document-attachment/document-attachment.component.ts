@@ -51,7 +51,7 @@ export class DocumentAttachmentComponent implements OnInit {
 
         const document = file as MedicalDocument;
         document.extension = extension;
-        document.medicalType = MedicalType.ApprovalFromMother;
+        document.medicalType = MedicalType.activation;
 
         console.log(document);
 

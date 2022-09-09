@@ -14,11 +14,9 @@ type MedicalDocument = File & {
 };
 
 enum MedicalType {
-  BlackMarketTransplant = 'Black Market Transplant',
-  KidneyStoneRemoval = 'Kidney Stone Removal',
-  KidneyStoneImplant = 'Kidney Stone Implant',
-  ApprovalFromMother = 'Approval from Mother',
-  DialysisTreatment = 'Dialysis Treatment',
+  activation = 'Activation',
+  declination = 'Declination',
+  deactivation = 'Deactivation',
 }
 
 interface ExtensionType {

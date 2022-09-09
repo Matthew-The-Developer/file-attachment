@@ -9,13 +9,13 @@ import { MedicalType, VirtualDocument } from '../models/document.model';
 export class TabsComponent implements OnInit {
   documents: VirtualDocument[] = [
     {
-      url: 'https://www.cs.cmu.edu/~dst/Adobe/Gallery/PDFsecurity.pdf',
+      url: 'https://github.com/Matthew-The-Developer/file-attachment/blob/master/src/assets/pdf-test.pdf',
       name: "pdf-test.pdf",
       size: 2534446,
       extension: '.pdf',
       type: 'application/pdf',
       lastModified: new Date(1659762822100),
-      medicalType: MedicalType.ApprovalFromMother,
+      medicalType: MedicalType.activation,
     },
     {
       url: 'https://www.thecoderpedia.com/wp-content/uploads/2020/06/Programming-Memes-Programmer-while-sleeping.jpg?x34900',
@@ -24,7 +24,7 @@ export class TabsComponent implements OnInit {
       extension: '.jpg',
       type: 'image/jpeg',
       lastModified: new Date(1661779977375),
-      medicalType: MedicalType.KidneyStoneImplant,
+      medicalType: MedicalType.declination,
     },
     {
       url: './assets/example03.docx',
@@ -33,7 +33,7 @@ export class TabsComponent implements OnInit {
       extension: '.docx',
       type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
       lastModified: new Date(1659672717869),
-      medicalType: MedicalType.BlackMarketTransplant,
+      medicalType: MedicalType.deactivation,
     }
   ];
 

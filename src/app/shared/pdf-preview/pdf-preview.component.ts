@@ -23,7 +23,7 @@ export class PdfPreviewComponent implements OnInit {
       reader.readAsDataURL(this.data);
     } else {
       this.url = this.data.url;
-      this.http.get(this.url, { responseType: 'arraybuffer' }).subscribe(result => console.log(result));
+      this.http.get(this.url, { responseType: 'blob' }).subscribe(result => console.log(result));
     }
   }
 }

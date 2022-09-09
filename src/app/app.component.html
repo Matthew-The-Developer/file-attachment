@@ -1,17 +1,11 @@
-<ng-container *ngIf="authService.user$ | async; else unauthenticated">
-  <button [matMenuTriggerFor]="userMenu" mat-fab color="primary" class="login">
-    <mat-icon>person</mat-icon>
-  </button>
+<mat-toolbar>
+  <span>File Attachment</span>
 
-  <mat-menu #userMenu="matMenu" yPosition="below" xPosition="before">
-    <app-user-menu></app-user-menu>
-  </mat-menu>
-</ng-container>
+  <span spacer></span>
 
-<ng-template #unauthenticated>
-  <button (click)="openLogin()" mat-fab color="primary" class="login">
-    <mat-icon>login</mat-icon>
-  </button>
-</ng-template>
+  <button mat-button routerLink="/modal" routerLinkActive="active">Modal</button>
+  <button mat-button routerLink="/form" routerLinkActive="active">Form</button>
+  <button mat-button routerLink="/tabs" routerLinkActive="active">Tabs</button>
+</mat-toolbar>
 
 <router-outlet></router-outlet>
