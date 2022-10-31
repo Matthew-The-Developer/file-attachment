@@ -16,7 +16,8 @@ export class ModalComponent implements OnInit {
 
   openDocumentAttachment(): void {
     this.dialog.open(DocumentDialogComponent, {
-      width: '55vw',
+      maxWidth: '75vw',
+      minWidth: '55vw',
       panelClass: 'document-dialog',
       autoFocus: false,
       hasBackdrop: false,

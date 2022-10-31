@@ -4,10 +4,28 @@
   </mat-toolbar>
 
   <mat-card-content>
+    <div class="row">
+
+
+
+    </div>
+    
     <app-document-attachment [singleLineAttach]="true"></app-document-attachment>
   </mat-card-content>
 
-  <mat-card-actions align="end">
+  <mat-card-actions>
+    <div class="item">
+      <mat-icon color="accent">account_circle</mat-icon>
+      <span class="mat-body">John Smith</span>
+    </div>
+
+    <div class="item">
+      <mat-icon color="accent">local_hospital</mat-icon>
+      <span class="mat-body">Kidneys R' Us</span>
+    </div>
+
+    <span spacer></span>
+
     <button mat-stroked-button mat-dialog-close>Cancel</button>
     <button mat-flat-button color="primary">Attach All</button>
   </mat-card-actions>

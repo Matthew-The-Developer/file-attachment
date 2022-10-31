@@ -8,11 +8,11 @@
   padding-right: 0.5rem;
 }
 
- @keyframes spinner {
+@keyframes spinner {
   to { transform: rotate(360); }
- }
+}
 
- .spinner:before {
+.spinner:before {
   content: '';
   box-sizing: border-box;
   position: absolute;
@@ -26,4 +26,4 @@
   border: 2px solid #ffffff;
   border-top-color: $primary;
   animation: spinner .8s linear infinite;
- }
+}
