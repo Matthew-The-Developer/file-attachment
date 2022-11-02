@@ -44,11 +44,15 @@
       class="suffixIcon"
       mat-button
     >
-      {{ file.documentDate | date:'shortDate' }}<mat-icon class="dateIcon">today</mat-icon>
+      {{ file.documentDate | date:'shortDate' }}<mat-icon class="date-icon">today</mat-icon>
     </button>
 
     <mat-menu #dateMenu="matMenu" class="date-menu">
       <ng-template matMenuContent>
+        <div class="label">
+          <span class="mat-h3">Release's Effective Date</span>
+        </div>
+
         <div (click)="$event.stopPropagation()">
           <mat-calendar (selectedChange)="changeDocumentDate(file, $event)" [selected]="file.documentDate"></mat-calendar>
         </div>
