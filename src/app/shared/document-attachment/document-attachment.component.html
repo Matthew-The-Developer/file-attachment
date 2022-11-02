@@ -16,7 +16,7 @@
   
     <input
       #fileInput
-      (change)="onSelected($event)"
+      (change)="selected($event)"
       [accept]="acceptableTypes"
       type="file"
       class="file-upload"
@@ -29,41 +29,54 @@
 <mat-divider></mat-divider>
 
 <mat-list>
-  <mat-list-item *ngFor="let file of files" class="file">
-    <span 
-      (click)="openPreview(file)"
-      [class.underline]="isPreviewable(file)"
-      [matTooltipDisabled]="!isDocument(file)"
-      matTooltip="Attach this document or open it locally to preview"
-      class="name"
-    >
-      {{ file.name }}
+  <mat-list-item *ngFor="let file of selectedFiles" class="file">
+    <span class="name">
+      {{ file.name }}.{{ file.extension }}
     </span>
-    
+
     <span class="mat-caption size">{{ file.size | fileSize }}</span>
 
     <span spacer></span>
 
-    <button mat-button [matMenuTriggerFor]="menu" class="suffixIcon">
-      {{ file.medicalType }}
+    <button
+      #dateMenuTrigger="matMenuTrigger"
+      [matMenuTriggerFor]="dateMenu"
+      class="suffixIcon"
+      mat-button
+    >
+      {{ file.documentDate | date:'shortDate' }}<mat-icon class="dateIcon">today</mat-icon>
+    </button>
+
+    <mat-menu #dateMenu="matMenu" class="date-menu">
+      <ng-template matMenuContent>
+        <div (click)="$event.stopPropagation()">
+          <mat-calendar (selectedChange)="changeDocumentDate(file, $event)" [selected]="file.documentDate"></mat-calendar>
+        </div>
+      </ng-template>
+    </mat-menu>
+
+    <button [matMenuTriggerFor]="typeMenu" class="suffixIcon" mat-button>
+      {{ file.type }}
       <mat-icon>arrow_drop_down</mat-icon>
     </button>
 
-    <mat-menu #menu="matMenu">
+    <mat-menu #typeMenu="matMenu">
       <button 
         *ngFor="let type of medicalTypes"
-        (click)="changeMedicalType(file, type)"
+        (click)="changeSelectedType(file, type)"
         mat-menu-item
       >
         {{ type }}
       </button>
     </mat-menu>
 
-    <button (click)="removeFile(file)" color="warn" mat-icon-button>
+    <button (click)="deselectFile(file)" color="warn" class="square" mat-button>
       <mat-icon>close</mat-icon>
     </button>
 
-    <button *ngIf="singleLineAttach" color="accent" mat-flat-button>Attach</button>
+    <button *ngIf="singleLineAttach" color="accent" class="square" mat-button>
+      <mat-icon>file_upload</mat-icon>
+    </button>
   </mat-list-item>
 
   <mat-list-item *ngFor="let document of virtualDocuments" class="file">
@@ -80,11 +93,11 @@
 
     <span spacer></span>
 
-    <button mat-button [matMenuTriggerFor]="menu" class="suffixIcon">
+    <button mat-button [matMenuTriggerFor]="typeMenu" class="suffixIcon">
       {{ document.medicalType }}<mat-icon>arrow_drop_down</mat-icon>
     </button>
 
-    <mat-menu #menu="matMenu">
+    <mat-menu #typeMenu="matMenu">
       <button 
         *ngFor="let type of medicalTypes"
         (click)="changeMedicalType(document, type)"
@@ -109,7 +122,7 @@
     </mat-menu>
   </mat-list-item>
 
-  <ng-container *ngIf="files.length == 0 && virtualDocuments.length == 0">
+  <ng-container *ngIf="selectedFiles.length == 0 && virtualDocuments.length == 0">
     <mat-list-item class="no-files">
       <span class="mat-body">No Documents Attached</span>
     </mat-list-item>

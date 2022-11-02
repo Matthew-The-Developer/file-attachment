@@ -1,6 +1,8 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { MatMenuTrigger } from '@angular/material/menu';
 import { DocumentExtensions, ImageExtensions, MedicalDocument, MedicalType, PDFExtensions, VirtualDocument } from 'src/app/models/document.model';
+import { PatientFile } from 'src/app/models/patient-file.model';
 import { ImagePreviewComponent } from '../image-preview/image-preview.component';
 import { PdfPreviewComponent } from '../pdf-preview/pdf-preview.component';
 
@@ -10,22 +12,22 @@ import { PdfPreviewComponent } from '../pdf-preview/pdf-preview.component';
   styleUrls: ['./document-attachment.component.scss']
 })
 export class DocumentAttachmentComponent implements OnInit {
+  @Input() existingFiles: PatientFile[] = [];
   @Input() singleLineAttach: boolean = false;
   @Input() readonly: boolean = false;
   @Input() virtualDocuments: VirtualDocument[] = [];
+
+  @ViewChild('dateMenuTrigger') dateMenuTrigger: MatMenuTrigger | undefined;
+
   files: MedicalDocument[] = [];
+  selectedFiles: PatientFile[] = [];
 
   constructor(public dialog: MatDialog) { }
 
   ngOnInit(): void { }
 
-  get medicalTypes(): string[] {
-    return Object.values(MedicalType);
-  }
-
-  get acceptableTypes(): string {
-    return [ ...DocumentExtensions.keys(), ...ImageExtensions.keys(), ...PDFExtensions.keys() ].join(',');
-  }
+  get medicalTypes(): string[] { return Object.values(MedicalType) }
+  get acceptableTypes(): string { return [ ...DocumentExtensions.keys(), ...ImageExtensions.keys(), ...PDFExtensions.keys() ].join(',') }
 
   isImage(document: MedicalDocument | VirtualDocument): boolean {
     return ImageExtensions.has(document.extension);
@@ -53,9 +55,28 @@ export class DocumentAttachmentComponent implements OnInit {
         document.extension = extension;
         document.medicalType = MedicalType.activation;
 
-        console.log(document);
-
         return document;
+      });
+
+      event.target.value = null;
+    }
+  }
+
+  selected(event: any): void {
+    if (event.target.files.length > 0) {
+      this.selectedFiles = (Array.from(event.target.files) as File[]).map((file: File) => {
+        const splitName = file.name.split('.');
+        const name = splitName.slice(0, -1).join('.');
+        const extension = splitName[splitName.length - 1];
+
+        return {
+          name,
+          size: file.size,
+          extension,
+          documentDate: new Date(file.lastModified),
+          type: MedicalType.activation,
+          file: file
+        };
       });
 
       event.target.value = null;
@@ -70,8 +91,23 @@ export class DocumentAttachmentComponent implements OnInit {
     }
   }
 
+  deselectFile(fileToRemove: PatientFile): void {
+    this.selectedFiles = this.selectedFiles.filter(file => file !== fileToRemove);
+  }
+
   changeMedicalType(document: MedicalDocument | VirtualDocument, type: string): void {
     document.medicalType = type as MedicalType;
+  }
+
+  changeSelectedType(file: PatientFile, type: string): void {
+    file.type = type as MedicalType;
+  }
+
+  changeDocumentDate(file: PatientFile, date: Date): void {
+    if (date) {
+      file.documentDate = date;
+      this.dateMenuTrigger?.closeMenu();
+    }
   }
 
   openPreview(document: MedicalDocument | VirtualDocument): void {
@@ -108,5 +144,9 @@ export class DocumentAttachmentComponent implements OnInit {
       panelClass: 'pdf-preview-dialog',
       maxHeight: '90vh',
     })
+  }
+
+  log($event:any): void {
+    console.log($event);
   }
 }
