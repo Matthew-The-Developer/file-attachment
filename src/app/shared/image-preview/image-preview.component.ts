@@ -1,6 +1,6 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { VirtualDocument } from 'src/app/models/document.model';
+import { PatientFile } from 'src/app/models/patient-file.model';
 
 @Component({
   selector: 'app-image-preview',
@@ -10,7 +10,7 @@ import { VirtualDocument } from 'src/app/models/document.model';
 export class ImagePreviewComponent implements OnInit {
   url!: string;
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: File | VirtualDocument) { }
+  constructor(@Inject(MAT_DIALOG_DATA) public data: PatientFile) { }
 
   ngOnInit(): void {
     this.data;
@@ -20,7 +20,7 @@ export class ImagePreviewComponent implements OnInit {
       reader.onload = () => this.url = reader.result as string;
       reader.readAsDataURL(this.data);
     } else {
-      this.url = this.data.url;
+      this.url = this.data.url!;
     }
   }
 

@@ -1,11 +1,14 @@
-import { MedicalType } from "./document.model";
-
 export interface PatientFile {
+  fileID?: number;
+  file?: File;
+  attachedToRecordID?: number;
   name: string;
-  size: number;
+  extensionID: number;
   extension: string;
   documentDate: Date;
-  type: MedicalType;
+  byteSize: number;
+  groupTypeID: number;
+  typeName: string;
+  groupName: string;
   url?: string;
-  file?: File;
 }

@@ -1,6 +1,6 @@
 <div class="row">
   <span class="mat-body-strong caption">
-    Documents {{ virtualDocuments.length }} <span *ngIf="files.length > 0">(+{{ files.length }})</span>
+    Documents {{ (existingFiles$ | async)?.length ?? 0 }} <span *ngIf="(selectedFiles$ | async)?.length ?? 0 > 0">(+{{ (selectedFiles$ | async)?.length ?? 0 }})</span>
   </span>
 
   <span spacer></span>
@@ -17,10 +17,10 @@
     <input
       #fileInput
       (change)="selected($event)"
-      [accept]="acceptableTypes"
+      [multiple]="!singleFile"
+      [accept]="acceptableExtensions$ | async"
       type="file"
       class="file-upload"
-      multiple
       hidden
     >
   </ng-container>
@@ -29,12 +29,12 @@
 <mat-divider></mat-divider>
 
 <mat-list>
-  <mat-list-item *ngFor="let file of selectedFiles" class="file">
+  <mat-list-item *ngFor="let file of selectedFiles$ | async" class="file">
     <span class="name">
       {{ file.name }}.{{ file.extension }}
     </span>
 
-    <span class="mat-caption size">{{ file.size | fileSize }}</span>
+    <span class="mat-caption size">{{ file.byteSize | fileSize }}</span>
 
     <span spacer></span>
 
@@ -54,23 +54,23 @@
         </div>
 
         <div (click)="$event.stopPropagation()">
-          <mat-calendar (selectedChange)="changeDocumentDate(file, $event)" [selected]="file.documentDate"></mat-calendar>
+          <mat-calendar (selectedChange)="selectedFileDateChange(file, $event); dateMenuTrigger.closeMenu()" [selected]="file.documentDate"></mat-calendar>
         </div>
       </ng-template>
     </mat-menu>
 
     <button [matMenuTriggerFor]="typeMenu" class="suffixIcon" mat-button>
-      {{ file.type }}
+      {{ file.typeName }}
       <mat-icon>arrow_drop_down</mat-icon>
     </button>
 
     <mat-menu #typeMenu="matMenu">
       <button 
-        *ngFor="let type of medicalTypes"
-        (click)="changeSelectedType(file, type)"
+        *ngFor="let type of attachmentTypes$ | async"
+        (click)="selectedFileTypeChange(file, type)"
         mat-menu-item
       >
-        {{ type }}
+        {{ type.typeName }}
       </button>
     </mat-menu>
 
@@ -78,55 +78,75 @@
       <mat-icon>close</mat-icon>
     </button>
 
-    <button *ngIf="singleLineAttach" color="accent" class="square" mat-button>
+    <button *ngIf="!singleFile" color="accent" class="square" mat-button>
       <mat-icon>file_upload</mat-icon>
     </button>
   </mat-list-item>
 
-  <mat-list-item *ngFor="let document of virtualDocuments" class="file">
-    <span 
-      (click)="openPreview(document)"
-      [class.underline]="isPreviewable(document)"
-      [matTooltipDisabled]="!isDocument(document)"
-      matTooltip="Attach this document or open it locally to preview"
-    >
-      {{ document.name }}
-    </span>
-    
-    <span class="mat-caption size">{{ document.size | fileSize }}</span>
-
-    <span spacer></span>
-
-    <button mat-button [matMenuTriggerFor]="typeMenu" class="suffixIcon">
-      {{ document.medicalType }}<mat-icon>arrow_drop_down</mat-icon>
-    </button>
-
-    <mat-menu #typeMenu="matMenu">
-      <button 
-        *ngFor="let type of medicalTypes"
-        (click)="changeMedicalType(document, type)"
-        mat-menu-item
+  <ng-container *ngIf="!uploadonly">
+    <mat-list-item *ngFor="let file of existingFiles$ | async" class="file">
+      <span class="name">
+        {{ file.name }}.{{ file.extension }}
+      </span>
+  
+      <span class="mat-caption size">{{ file.byteSize | fileSize }}</span>
+  
+      <span spacer></span>
+  
+      <button
+        #dateMenuTrigger="matMenuTrigger"
+        [matMenuTriggerFor]="dateMenu"
+        class="suffixIcon"
+        mat-button
       >
-        {{ type }}
+        {{ file.documentDate | date:'shortDate' }}<mat-icon class="date-icon">today</mat-icon>
       </button>
-    </mat-menu>
+  
+      <mat-menu #dateMenu="matMenu" class="date-menu">
+        <ng-template matMenuContent>
+          <div class="label">
+            <span class="mat-h3">Release's Effective Date</span>
+          </div>
+  
+          <div (click)="$event.stopPropagation()">
+            <mat-calendar (selectedChange)="existingFileDateChange(file, $event); dateMenuTrigger.closeMenu()" [selected]="file.documentDate"></mat-calendar>
+          </div>
+        </ng-template>
+      </mat-menu>
+  
+      <button [matMenuTriggerFor]="typeMenu" class="suffixIcon" mat-button>
+        {{ file.typeName }}
+        <mat-icon>arrow_drop_down</mat-icon>
+      </button>
+  
+      <mat-menu #typeMenu="matMenu">
+        <button 
+          *ngFor="let type of attachmentTypes$ | async"
+          (click)="existingFileTypeChange(file, type)"
+          mat-menu-item
+        >
+          {{ type.typeName }}
+        </button>
+      </mat-menu>
+  
+      <button [matMenuTriggerFor]="actionMenu" color="primary" class="square" mat-button>
+        <mat-icon>more_horiz</mat-icon>
+      </button>
+      
+      <mat-menu #actionMenu="matMenu" xPosition="before">
+        <button mat-menu-item>
+          <mat-icon>file_download</mat-icon>
+          <span>Download</span>
+        </button>
+        <button mat-menu-item>
+          <mat-icon color="warn">delete</mat-icon>
+          <mat-error>Delete</mat-error>
+        </button>
+      </mat-menu>
+    </mat-list-item>
+  </ng-container>
 
-    <button mat-icon-button [matMenuTriggerFor]="actionMenu" aria-label="Example icon-button with a menu">
-      <mat-icon>more_horiz</mat-icon>
-    </button>
-    <mat-menu #actionMenu="matMenu">
-      <button mat-menu-item>
-        <mat-icon>file_download</mat-icon>
-        <span>Download</span>
-      </button>
-      <button mat-menu-item color="warn">
-        <mat-icon>delete</mat-icon>
-        <span>Delete</span>
-      </button>
-    </mat-menu>
-  </mat-list-item>
-
-  <ng-container *ngIf="selectedFiles.length == 0 && virtualDocuments.length == 0">
+  <ng-container *ngIf="(selectedFiles$ | async)?.length == 0 && (uploadonly || (existingFiles$ | async)?.length == 0)">
     <mat-list-item class="no-files">
       <span class="mat-body">No Documents Attached</span>
     </mat-list-item>

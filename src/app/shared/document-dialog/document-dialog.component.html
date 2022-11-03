@@ -4,7 +4,12 @@
   </mat-toolbar>
 
   <mat-card-content>
-    <app-document-attachment [singleLineAttach]="true"></app-document-attachment>
+    <app-document-attachment
+      [_existingFiles]="_existingFiles"
+      [_attachmentTypes]="_attachmentTypes"
+      [_extensions]="_extensions"
+      [uploadonly]="true"
+    ></app-document-attachment>
   </mat-card-content>
 
   <mat-card-actions>
