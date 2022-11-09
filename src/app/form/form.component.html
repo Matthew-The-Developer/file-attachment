@@ -53,9 +53,9 @@
     </form>
 
     <app-document-attachment
-      [_existingFiles]="_existingFiles"
-      [_attachmentTypes]="_attachmentTypes"
-      [_extensions]="_extensions"
+      [options]="options"
+      [groupIDs]="groupIDs"
+      [getExisting]="true"
     ></app-document-attachment>
   </mat-card-content>
 

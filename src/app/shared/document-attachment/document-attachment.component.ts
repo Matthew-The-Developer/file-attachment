@@ -1,9 +1,11 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { BehaviorSubject, map, Observable } from 'rxjs';
+import { BehaviorSubject, filter, map, Observable } from 'rxjs';
 import { FileExtension } from 'src/app/models/file-extension.model';
-import { FileGroupType } from 'src/app/models/file-group-type.model';
+import { FileGroupType, FileTypeGroup } from 'src/app/models/file-group-type.model';
+import { FileRequestOptions } from 'src/app/models/file-request-options.model';
 import { PatientFile } from 'src/app/models/patient-file.model';
+import { DocumentService } from 'src/app/services/document.service';
 import { ImagePreviewComponent } from '../image-preview/image-preview.component';
 import { PdfPreviewComponent } from '../pdf-preview/pdf-preview.component';
 
@@ -13,24 +15,53 @@ import { PdfPreviewComponent } from '../pdf-preview/pdf-preview.component';
   styleUrls: ['./document-attachment.component.scss']
 })
 export class DocumentAttachmentComponent implements OnInit {
-  @Input() _existingFiles: BehaviorSubject<PatientFile[]> = new BehaviorSubject<PatientFile[]>([]);
-  @Input() _attachmentTypes: BehaviorSubject<FileGroupType[]> = new BehaviorSubject<FileGroupType[]>([]);
-  @Input() _extensions: BehaviorSubject<FileExtension[]> = new BehaviorSubject<FileExtension[]>([]);
+  @Input() options!: FileRequestOptions;
+  @Input() groupIDs!: number[]; 
   @Input() defaultAttachmentTypeID?: number = undefined;
+  @Input() getExisting: boolean = false;
   @Input() singleFile: boolean = false;
-  @Input() uploadonly: boolean = false;
   @Input() readonly: boolean = false;
 
-  _selectedFiles: BehaviorSubject<PatientFile[]> = new BehaviorSubject<PatientFile[]>([]);;
+  _selectedFiles: BehaviorSubject<PatientFile[]> = new BehaviorSubject<PatientFile[]>([]);
+  _existingFiles: BehaviorSubject<PatientFile[] | null> = new BehaviorSubject<PatientFile[] | null>(null);
+  _attachmentTypes: BehaviorSubject<FileGroupType[] | null> = new BehaviorSubject<FileGroupType[] | null>(null);
+  _attachmentTypeGroups: BehaviorSubject<FileTypeGroup[]> = new BehaviorSubject<FileTypeGroup[]>([]);
+  _extensions: BehaviorSubject<FileExtension[] | null> = new BehaviorSubject<FileExtension[] | null>(null);
 
-  constructor(public dialog: MatDialog) { }
+  constructor(
+    private documentService: DocumentService,
+    public dialog: MatDialog
+  ) { }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {
+    this.documentService.getFileExtensions().subscribe(this._extensions);
+    this.documentService.getFileGroups(this.groupIDs).subscribe(this._attachmentTypes);
+    this.attachmentTypes$.pipe(
+      filter(groups => !!groups),
+      map(groups => {
+        const names = new Map(groups!.map(group => [group.groupID, group.groupName]));
+        const typeGroups: FileTypeGroup[] = [];
+        Array.from(names.keys()).forEach(id => typeGroups.push({ groupName: names.get(id)!, types: groups!.filter(group => group.groupID === id) }));
+        return typeGroups;
+      })
+    ).subscribe(this._attachmentTypeGroups);
 
-  get existingFiles$(): Observable<PatientFile[]> { return this._existingFiles.asObservable() }
+    if (this.getExisting) {
+      this.documentService.getPatientFiles(this.options).subscribe(this._existingFiles);
+    }
+  }
+
+  get existingFiles$(): Observable<PatientFile[] | null> { return this._existingFiles.asObservable() }
   get selectedFiles$(): Observable<PatientFile[]> { return this._selectedFiles.asObservable() }
-  get attachmentTypes$(): Observable<FileGroupType[]> { return this._attachmentTypes.asObservable() }
-  get acceptableExtensions$(): Observable<string> { return this._extensions.asObservable().pipe(map(types => types.map(type => type.extension).join(','))) }
+  get attachmentTypes$(): Observable<FileGroupType[] | null> { return this._attachmentTypes.asObservable() }
+  get attachmentTypeGroups$(): Observable<FileTypeGroup[]> { return this._attachmentTypeGroups.asObservable() }
+  get extensions$(): Observable<FileExtension[] | null> { return this._extensions.asObservable() }
+  get acceptableExtensions$(): Observable<string> { 
+    return this._extensions.asObservable().pipe(
+      filter(types => !!types),
+      map(types => types!.map(type => type.extension).join(','))
+    );
+  }
 
   selected(event: any): void {
     console.log(event);
@@ -38,13 +69,13 @@ export class DocumentAttachmentComponent implements OnInit {
       const files: PatientFile[] = (Array.from(event.target.files) as File[]).map((file: File) => {
         const splitName = file.name.split('.');
         const name = splitName.slice(0, -1).join('.');
-        const extensionRef = this._extensions.value.find(extension => extension.extension === splitName[splitName.length - 1]);
+        const extensionRef = this._extensions.value!.find(extension => extension.extension === splitName[splitName.length - 1]);
 
         let fileType = null;
         if (this.defaultAttachmentTypeID) {
-          fileType = this._attachmentTypes.value.find(type => type.groupTypeID === this.defaultAttachmentTypeID)
+          fileType = this._attachmentTypes.value!.find(type => type.groupTypeID === this.defaultAttachmentTypeID)
         } else {
-          fileType = this._attachmentTypes.value[0];
+          fileType = this._attachmentTypes.value![0];
         }
 
         return {

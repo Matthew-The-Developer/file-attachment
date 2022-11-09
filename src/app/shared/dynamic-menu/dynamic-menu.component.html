@@ -1,0 +1,18 @@
+<button
+  #dynamicMenuTrigger="matMenuTrigger"
+  [matMenuTriggerFor]="menu"
+  mat-menu-item 
+>
+  {{ group.groupName }}
+</button>
+
+<mat-menu #menu="matMenu">
+  <button 
+    *ngFor="let type of group.types"
+    (click)="selected(type)"
+    
+    mat-menu-item
+  >
+    {{ type.typeName }}
+  </button>
+</mat-menu>

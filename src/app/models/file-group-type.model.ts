@@ -5,3 +5,8 @@ export interface FileGroupType {
   typeID: number;
   typeName: string;
 }
+
+export interface FileTypeGroup {
+  groupName: string;
+  types: FileGroupType[];
+}

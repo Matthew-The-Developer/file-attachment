@@ -16,6 +16,7 @@ import { CompactDirective } from './directives/compact.directive';
 import { UserMenuComponent } from './user-menu/user-menu.component';
 import { DocumentDialogComponent } from './document-dialog/document-dialog.component';
 import { HttpClientModule } from '@angular/common/http';
+import { DynamicMenuComponent } from './dynamic-menu/dynamic-menu.component';
 
 @NgModule({
   declarations: [
@@ -29,6 +30,7 @@ import { HttpClientModule } from '@angular/common/http';
     CompactDirective,
     UserMenuComponent,
     DocumentDialogComponent,
+    DynamicMenuComponent,
   ],
   imports: [
     CommonModule,
