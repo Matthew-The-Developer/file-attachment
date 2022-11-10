@@ -1,11 +1,21 @@
 <div class="row">
-  <span *ngIf="getExisting" class="mat-body-strong caption">
-    Documents {{ (existingFiles$ | async)?.length ?? 0 }} <span *ngIf="(selectedFiles$ | async)?.length ?? 0 > 0">(+{{ (selectedFiles$ | async)?.length ?? 0 }})</span>
-  </span>
+  <ng-container *ngIf="getExisting; else uploadOnlyCount">
+    <ng-container *ngIf="!(existingFiles$ | async); else existingCountLoaded">
+      <span class="mat-body-strong caption">Files loading...</span>
+    </ng-container>
 
-  <span *ngIf="!getExisting" class="mat-body-strong caption">
-    Selected Documents {{ (selectedFiles$ | async)?.length ?? 0 }}
-  </span>
+    <ng-template #existingCountLoaded>
+      <span class="mat-body-strong caption">
+        Files {{ (existingFiles$ | async)?.length ?? 0 }} <span *ngIf="(selectedFiles$ | async)?.length ?? 0 > 0">(+{{ (selectedFiles$ | async)?.length ?? 0 }})</span>
+      </span>
+    </ng-template>
+  </ng-container>
+
+  <ng-template #uploadOnlyCount>
+    <span class="mat-body-strong caption">
+      Selected Files {{ (selectedFiles$ | async)?.length ?? 0 }}
+    </span>
+  </ng-template>
 
   <span spacer></span>
 
@@ -16,7 +26,7 @@
       color="accent"
       mat-button
     >
-      Select Documents
+      Select Files
     </button>
   
     <input
@@ -55,7 +65,7 @@
     <mat-menu #dateMenu="matMenu" class="date-menu">
       <ng-template matMenuContent>
         <div class="label">
-          <span class="mat-h3">Release's Effective Date</span>
+          <span class="mat-h3">{{ documentDateLabel }}</span>
         </div>
 
         <div (click)="$event.stopPropagation()">
@@ -64,21 +74,13 @@
       </ng-template>
     </mat-menu>
 
-    <button [matMenuTriggerFor]="typeMenu" class="suffixIcon" mat-button>
+    <button [matMenuTriggerFor]="groupMenu" class="suffixIcon" mat-button>
       {{ file.typeName }}
       <mat-icon>arrow_drop_down</mat-icon>
     </button>
 
-    <mat-menu #typeMenu="matMenu">
-      <ng-container *ngIf="(attachmentTypeGroups$ | async)!.length > 1; else singleGroup">
-        <app-dynamic-menu
-          *ngFor="let group of attachmentTypeGroups$ | async"
-          (typeSelected)="selectedFileTypeChange(file, $event)"
-          [group]="group"
-        ></app-dynamic-menu>
-      </ng-container>
-
-      <ng-template #singleGroup>
+    <mat-menu #groupMenu="matMenu">
+      <ng-container *ngIf="(attachmentTypeGroups$ | async)!.length < 2; else multipleGroups">
         <button 
           *ngFor="let type of (attachmentTypes$ | async)"
           (click)="selectedFileTypeChange(file, type)"
@@ -86,6 +88,21 @@
         >
           {{ type.typeName }}
         </button>
+      </ng-container>
+
+      <ng-template #multipleGroups>
+        <ng-container *ngFor="let group of attachmentTypeGroups$ | async">
+          <button mat-menu-item [matMenuTriggerFor]="typeMenu">{{ group.groupName }}</button>
+          <mat-menu #typeMenu="matMenu">
+            <button 
+              *ngFor="let type of group.types"
+              (click)="selectedFileTypeChange(file, type)"
+              mat-menu-item
+            >
+              {{ type.typeName }}
+            </button>
+          </mat-menu>
+        </ng-container>
       </ng-template>
     </mat-menu>
 
@@ -120,7 +137,7 @@
       <mat-menu #dateMenu="matMenu" class="date-menu">
         <ng-template matMenuContent>
           <div class="label">
-            <span class="mat-h3">Release's Effective Date</span>
+            <span class="mat-h3">{{ documentDateLabel }}</span>
           </div>
   
           <div (click)="$event.stopPropagation()">
@@ -128,31 +145,6 @@
           </div>
         </ng-template>
       </mat-menu>
-  
-      <!-- <button [matMenuTriggerFor]="typeMenu" class="suffixIcon" mat-button>
-        {{ file.typeName }}
-        <mat-icon>arrow_drop_down</mat-icon>
-      </button>
-  
-      <mat-menu #typeMenu="matMenu">
-        <ng-container *ngIf="(attachmentTypeGroups$ | async)!.length > 1; else singleGroup">
-          <app-dynamic-menu
-            *ngFor="let group of attachmentTypeGroups$ | async"
-            (typeSelected)="selectedFileTypeChange(file, $event)"
-            [group]="group"
-          ></app-dynamic-menu>
-        </ng-container>
-  
-        <ng-template #singleGroup>
-          <button 
-            *ngFor="let type of (attachmentTypes$ | async)"
-            (click)="selectedFileTypeChange(file, type)"
-            mat-menu-item
-          >
-            {{ type.typeName }}
-          </button>
-        </ng-template>
-      </mat-menu> -->
 
       <button [matMenuTriggerFor]="groupMenu" class="suffixIcon" mat-button>
         {{ file.typeName }}
@@ -212,13 +204,13 @@
   <ng-template #loaded>
     <ng-container *ngIf="getExisting; else uploadOnly">
       <mat-list-item *ngIf="(existingFiles$ | async)?.length == 0" class="no-files">
-        <span class="mat-body">No Documents Attached</span>
+        <span class="mat-body">No Files Attached</span>
       </mat-list-item>
     </ng-container>
 
     <ng-template #uploadOnly>
       <mat-list-item *ngIf="(selectedFiles$ | async)?.length == 0" class="no-files">
-        <span class="mat-body">No Documents Selected</span>
+        <span class="mat-body">No Files Selected</span>
       </mat-list-item>
     </ng-template>
   </ng-template>

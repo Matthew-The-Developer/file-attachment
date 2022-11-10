@@ -21,6 +21,7 @@ export class DocumentAttachmentComponent implements OnInit {
   @Input() getExisting: boolean = false;
   @Input() singleFile: boolean = false;
   @Input() readonly: boolean = false;
+  @Input() documentDateLabel: string = 'Document Date';
 
   _selectedFiles: BehaviorSubject<PatientFile[]> = new BehaviorSubject<PatientFile[]>([]);
   _existingFiles: BehaviorSubject<PatientFile[] | null> = new BehaviorSubject<PatientFile[] | null>(null);
