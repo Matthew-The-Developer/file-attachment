@@ -50,6 +50,8 @@ export class DocumentAttachmentComponent implements OnInit {
     if (this.getExisting) {
       this.documentService.getPatientFiles(this.options).subscribe(this._existingFiles);
     }
+
+    this.acceptableExtensions$.subscribe(result => console.log(result));
   }
 
   get existingFiles$(): Observable<PatientFile[] | null> { return this._existingFiles.asObservable() }
@@ -60,12 +62,11 @@ export class DocumentAttachmentComponent implements OnInit {
   get acceptableExtensions$(): Observable<string> { 
     return this._extensions.asObservable().pipe(
       filter(types => !!types),
-      map(types => types!.map(type => type.extension).join(','))
+      map(types => types!.map(type => `.${type.extension}`).join(','))
     );
   }
 
   selected(event: any): void {
-    console.log(event);
     if (event.target.files.length > 0) {
       const files: PatientFile[] = (Array.from(event.target.files) as File[]).map((file: File) => {
         const splitName = file.name.split('.');
