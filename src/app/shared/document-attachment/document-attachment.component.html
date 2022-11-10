@@ -110,8 +110,21 @@
       <mat-icon>close</mat-icon>
     </button>
 
-    <button *ngIf="!singleFile" color="accent" class="square" mat-button>
-      <mat-icon>file_upload</mat-icon>
+    <button 
+      *ngIf="!singleFile"
+      (click)="attachFile(file)"
+      [disabled]="attaching.has(file) && attaching.get(file)"
+      color="accent"
+      class="square" 
+      mat-button
+    >
+      <ng-container *ngIf="attaching.has(file) && attaching.get(file); else notAttaching">
+        <mat-spinner diameter="18" color="accent"></mat-spinner>
+      </ng-container>
+
+      <ng-template #notAttaching>
+        <mat-icon>file_upload</mat-icon>
+      </ng-template>
     </button>
   </mat-list-item>
 

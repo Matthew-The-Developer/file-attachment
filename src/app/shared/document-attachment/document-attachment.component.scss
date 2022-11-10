@@ -41,6 +41,10 @@
       .square {
         min-width: 36px;
         padding: 0;
+
+        mat-spinner {
+          margin: auto;
+        }
       }
       
       .date-icon {

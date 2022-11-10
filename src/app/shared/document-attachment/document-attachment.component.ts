@@ -29,6 +29,8 @@ export class DocumentAttachmentComponent implements OnInit {
   _attachmentTypeGroups: BehaviorSubject<FileTypeGroup[]> = new BehaviorSubject<FileTypeGroup[]>([]);
   _extensions: BehaviorSubject<FileExtension[] | null> = new BehaviorSubject<FileExtension[] | null>(null);
 
+  attaching: Map<PatientFile, boolean> = new Map<PatientFile, boolean>();
+
   constructor(
     private documentService: DocumentService,
     public dialog: MatDialog
@@ -105,6 +107,17 @@ export class DocumentAttachmentComponent implements OnInit {
 
   deleteFile(file: PatientFile): void {
 
+  }
+
+  attachFile(file: PatientFile): void {
+    this.attaching.set(file, true);
+    this.documentService.createPatientFile(file, this.options).subscribe(files => {
+      if (this.getExisting) {
+        this._existingFiles.next(files);
+      }
+      this.attaching.delete(file);
+      this.deselectFile(file);
+    });
   }
 
   selectedFileDateChange(file: PatientFile, date: Date): void {
