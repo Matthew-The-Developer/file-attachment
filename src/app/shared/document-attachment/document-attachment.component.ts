@@ -6,6 +6,7 @@ import { FileGroupType, FileTypeGroup } from 'src/app/models/file-group-type.mod
 import { FileRequestOptions } from 'src/app/models/file-request-options.model';
 import { PatientFile } from 'src/app/models/patient-file.model';
 import { DocumentService } from 'src/app/services/document.service';
+import { DeleteConfirmationDialogComponent } from '../delete-confirmation-dialog/delete-confirmation-dialog.component';
 import { ImagePreviewComponent } from '../image-preview/image-preview.component';
 import { PdfPreviewComponent } from '../pdf-preview/pdf-preview.component';
 
@@ -17,10 +18,11 @@ import { PdfPreviewComponent } from '../pdf-preview/pdf-preview.component';
 export class DocumentAttachmentComponent implements OnInit {
   @Input() options!: FileRequestOptions;
   @Input() groupIDs!: number[]; 
-  @Input() defaultAttachmentTypeID?: number = undefined;
   @Input() getExisting: boolean = false;
   @Input() singleFile: boolean = false;
   @Input() readonly: boolean = false;
+  @Input() defaultAttachmentTypeID?: number = undefined;
+  @Input() defaultToDateUploaded: boolean = false;
   @Input() documentDateLabel: string = 'Document Date';
 
   _selectedFiles: BehaviorSubject<PatientFile[]> = new BehaviorSubject<PatientFile[]>([]);
@@ -30,6 +32,9 @@ export class DocumentAttachmentComponent implements OnInit {
   _extensions: BehaviorSubject<FileExtension[] | null> = new BehaviorSubject<FileExtension[] | null>(null);
 
   attaching: Map<PatientFile, boolean> = new Map<PatientFile, boolean>();
+  deleting: Map<PatientFile, boolean> = new Map<PatientFile, boolean>();
+  typeChanging: Map<PatientFile, boolean> = new Map<PatientFile, boolean>();
+  dateChanging: Map<PatientFile, boolean> = new Map<PatientFile, boolean>();
 
   constructor(
     private documentService: DocumentService,
@@ -52,8 +57,6 @@ export class DocumentAttachmentComponent implements OnInit {
     if (this.getExisting) {
       this.documentService.getPatientFiles(this.options).subscribe(this._existingFiles);
     }
-
-    this.acceptableExtensions$.subscribe(result => console.log(result));
   }
 
   get existingFiles$(): Observable<PatientFile[] | null> { return this._existingFiles.asObservable() }
@@ -88,7 +91,7 @@ export class DocumentAttachmentComponent implements OnInit {
           byteSize: file.size,
           extensionID: extensionRef!.extensionID,
           extension: extensionRef!.extension,
-          documentDate: new Date(file.lastModified),
+          documentDate: this.defaultToDateUploaded ? new Date() : new Date(file.lastModified),
           groupTypeID: fileType!.groupTypeID,
           typeName: fileType!.typeName,
           groupName: fileType!.groupName,
@@ -106,7 +109,15 @@ export class DocumentAttachmentComponent implements OnInit {
   }
 
   deleteFile(file: PatientFile): void {
+    const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent, { data: `${file.name}.${file.extension}` });
 
+    dialogRef.afterClosed().pipe(filter(val => val!!)).subscribe(() => {
+      this.deleting.set(file, true);
+      this.documentService.deletePatientFile(file, this.options).subscribe(files => {
+        this._existingFiles.next(files);
+        this.deleting.delete(file);
+      });
+    });
   }
 
   attachFile(file: PatientFile): void {
@@ -133,11 +144,21 @@ export class DocumentAttachmentComponent implements OnInit {
   }
 
   existingFileDateChange(file: PatientFile, date: Date): void {
-
+    if (date) {
+      this.dateChanging.set(file, true);
+      this.documentService.updatePatientFileDate(file, date, this.options).subscribe(files => {
+        this._existingFiles.next(files);
+        this.dateChanging.delete(file);
+      });
+    }
   }
 
   existingFileTypeChange(file: PatientFile, type: FileGroupType): void {
-
+    this.typeChanging.set(file, true);
+    this.documentService.updatePatientFileGroupType(file, type, this.options).subscribe(files => {
+      this._existingFiles.next(files);
+      this.typeChanging.delete(file);
+    });
   }
 
   // openPreview(file: MedicalDocument | VirtualDocument): void {

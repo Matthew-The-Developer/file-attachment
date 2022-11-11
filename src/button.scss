@@ -6,6 +6,12 @@
 
 .mat-button.suffixIcon {
   padding-right: 0.5rem;
+
+  mat-spinner {
+    margin: 0 0.25rem;
+    padding: 0.125rem 0;
+    display: inline-block;
+  }
 }
 
 @keyframes spinner {

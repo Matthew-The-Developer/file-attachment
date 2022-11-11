@@ -141,10 +141,19 @@
       <button
         #dateMenuTrigger="matMenuTrigger"
         [matMenuTriggerFor]="dateMenu"
+        [disabled]="dateChanging.has(file) && dateChanging.get(file)"
         class="suffixIcon"
         mat-button
       >
-        {{ file.documentDate | date:'shortDate' }}<mat-icon class="date-icon">today</mat-icon>
+        {{ file.documentDate | date:'shortDate' }}
+
+        <ng-container *ngIf="dateChanging.has(file) && dateChanging.get(file); else notChangingDate">
+          <mat-spinner diameter="16"></mat-spinner>
+        </ng-container>
+  
+        <ng-template #notChangingDate>
+          <mat-icon class="date-icon">today</mat-icon>
+        </ng-template>
       </button>
   
       <mat-menu #dateMenu="matMenu" class="date-menu">
@@ -159,16 +168,27 @@
         </ng-template>
       </mat-menu>
 
-      <button [matMenuTriggerFor]="groupMenu" class="suffixIcon" mat-button>
+      <button 
+        [matMenuTriggerFor]="groupMenu"
+        [disabled]="typeChanging.has(file) && typeChanging.get(file)"
+        class="suffixIcon"
+        mat-button
+      >
         {{ file.typeName }}
-        <mat-icon>arrow_drop_down</mat-icon>
+        <ng-container *ngIf="typeChanging.has(file) && typeChanging.get(file); else notChangingType">
+          <mat-spinner diameter="16"></mat-spinner>
+        </ng-container>
+  
+        <ng-template #notChangingType>
+          <mat-icon>arrow_drop_down</mat-icon>
+        </ng-template>
       </button>
 
       <mat-menu #groupMenu="matMenu">
         <ng-container *ngIf="(attachmentTypeGroups$ | async)!.length < 2; else multipleGroups">
           <button 
             *ngFor="let type of (attachmentTypes$ | async)"
-            (click)="selectedFileTypeChange(file, type)"
+            (click)="existingFileTypeChange(file, type)"
             mat-menu-item
           >
             {{ type.typeName }}
@@ -181,7 +201,7 @@
             <mat-menu #typeMenu="matMenu">
               <button 
                 *ngFor="let type of group.types"
-                (click)="selectedFileTypeChange(file, type)"
+                (click)="existingFileTypeChange(file, type)"
                 mat-menu-item
               >
                 {{ type.typeName }}
@@ -191,8 +211,20 @@
         </ng-template>
       </mat-menu>
   
-      <button [matMenuTriggerFor]="actionMenu" color="primary" class="square" mat-button>
-        <mat-icon>more_horiz</mat-icon>
+      <button 
+        [matMenuTriggerFor]="actionMenu"
+        [disabled]="deleting.has(file) && deleting.get(file)"
+        color="primary"
+        class="square"
+        mat-button
+      >
+        <ng-container *ngIf="deleting.has(file) && deleting.get(file); else notWorking">
+          <mat-spinner diameter="18" color="primary"></mat-spinner>
+        </ng-container>
+  
+        <ng-template #notWorking>
+          <mat-icon>more_horiz</mat-icon>
+        </ng-template>
       </button>
       
       <mat-menu #actionMenu="matMenu" xPosition="before">
@@ -200,7 +232,7 @@
           <mat-icon>file_download</mat-icon>
           <span>Download</span>
         </button>
-        <button mat-menu-item>
+        <button (click)="deleteFile(file)" mat-menu-item>
           <mat-icon color="warn">delete</mat-icon>
           <span>Delete</span>
         </button>

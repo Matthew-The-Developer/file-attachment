@@ -13,6 +13,7 @@ import { ErrorMessagingComponent } from './error-messaging/error-messaging.compo
 import { CompactDirective } from './directives/compact.directive';
 import { DocumentDialogComponent } from './document-dialog/document-dialog.component';
 import { HttpClientModule } from '@angular/common/http';
+import { DeleteConfirmationDialogComponent } from './delete-confirmation-dialog/delete-confirmation-dialog.component';
 
 @NgModule({
   declarations: [
@@ -24,6 +25,7 @@ import { HttpClientModule } from '@angular/common/http';
     ErrorMessagingComponent,
     CompactDirective,
     DocumentDialogComponent,
+    DeleteConfirmationDialogComponent,
   ],
   imports: [
     CommonModule,
