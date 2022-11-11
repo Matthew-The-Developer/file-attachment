@@ -1,5 +1,13 @@
 @import '/src/variables.scss';
 
+:host {
+  mat-toolbar {
+    position: sticky;
+    top: 0px;
+    z-index: 1;
+  }
+}
+
 .active {
   color: $primary;
 }

@@ -1,12 +1,13 @@
 :host {
-  height: calc(100vh - 64px);
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 1rem;
 }
 
 mat-card {
-  width: 50%;
+  min-width: 724px;
+  max-width: 95vw;
   padding-bottom: 1.5rem;
 
   mat-card-content {
