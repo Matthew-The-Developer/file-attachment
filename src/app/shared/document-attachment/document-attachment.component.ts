@@ -1,6 +1,8 @@
+import { CollectionViewer, DataSource } from '@angular/cdk/collections';
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { BehaviorSubject, filter, map, Observable } from 'rxjs';
+import { BehaviorSubject, filter, map, Observable, ReplaySubject } from 'rxjs';
+import { CallStatus } from 'src/app/models/call-status.enum';
 import { FileExtension } from 'src/app/models/file-extension.model';
 import { FileGroupType, FileTypeGroup } from 'src/app/models/file-group-type.model';
 import { FileRequestOptions } from 'src/app/models/file-request-options.model';
@@ -31,7 +33,7 @@ export class DocumentAttachmentComponent implements OnInit {
   _attachmentTypeGroups: BehaviorSubject<FileTypeGroup[]> = new BehaviorSubject<FileTypeGroup[]>([]);
   _extensions: BehaviorSubject<FileExtension[] | null> = new BehaviorSubject<FileExtension[] | null>(null);
 
-  attaching: Map<PatientFile, boolean> = new Map<PatientFile, boolean>();
+  attaching: Map<PatientFile, CallStatus> = new Map<PatientFile, CallStatus>();
   deleting: Map<PatientFile, boolean> = new Map<PatientFile, boolean>();
   typeChanging: Map<PatientFile, boolean> = new Map<PatientFile, boolean>();
   dateChanging: Map<PatientFile, boolean> = new Map<PatientFile, boolean>();
@@ -121,13 +123,16 @@ export class DocumentAttachmentComponent implements OnInit {
   }
 
   attachFile(file: PatientFile): void {
-    this.attaching.set(file, true);
+    this.attaching.set(file, CallStatus.Loading);
     this.documentService.createPatientFile(file, this.options).subscribe(files => {
       if (this.getExisting) {
         this._existingFiles.next(files);
       }
       this.attaching.delete(file);
       this.deselectFile(file);
+    }, (error) => {
+      console.log(error);
+      this.attaching.set(file, CallStatus.Failure);
     });
   }
 
@@ -159,6 +164,10 @@ export class DocumentAttachmentComponent implements OnInit {
       this._existingFiles.next(files);
       this.typeChanging.delete(file);
     });
+  }
+
+  hasFailedAttach(file: PatientFile): string {
+    return this.attaching.has(file) && this.attaching.get(file) === CallStatus.Failure ? 'warn' : 'accent';
   }
 
   // openPreview(file: MedicalDocument | VirtualDocument): void {

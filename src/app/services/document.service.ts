@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, delay, filter, map, Observable } from 'rxjs';
+import { BehaviorSubject, delay, filter, map, mergeMap, Observable, of, throwError } from 'rxjs';
 import { FileExtension } from '../models/file-extension.model';
 import { FileGroupType } from '../models/file-group-type.model';
 import { FileRequestOptions } from '../models/file-request-options.model';
@@ -81,8 +81,9 @@ export class DocumentService {
   }
 
   createPatientFile(file: PatientFile, options: FileRequestOptions): Observable<PatientFile[]> {
-    this._files.next([file, ...this._files.value]);
-    return this.getPatientFiles(options);
+    return of(true).pipe(delay(5000), mergeMap(t => throwError(() => new Error())));
+    // this._files.next([file, ...this._files.value]);
+    // return this.getPatientFiles(options);
   }
 
   deletePatientFile(fileToRemove: PatientFile, options: FileRequestOptions): Observable<PatientFile[]> {
